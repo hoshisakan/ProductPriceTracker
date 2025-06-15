@@ -1,0 +1,5 @@
+ > [mssql internal] load metadata for mcr.microsoft.com/mssql/server:2022-latest:
+------
+failed to solve: mcr.microsoft.com/mssql/server:2022-latest: failed to resolve source metadata for mcr.microsoft.com/mssql/server:2022-latest: failed to do request: Head "https://mcr.microsoft.com/v2/mssql/server/manifests/2022-latest": EOF
+
+上述錯誤訊息只需要將已經產生的 image 檔案移除，再重跑就可以 pull mssql 其他版本

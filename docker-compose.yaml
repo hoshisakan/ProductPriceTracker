@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+    mssql:
+        build: ./conf/mssql
+        image: ${CONTAINER_AUTHOR}/${PROJECT_NAME}/mssql_${MSSQL_VERSION}
+        container_name: ${PROJECT_NAME}_mssql
+        volumes:
+            - ./data/mssql/mssql_data:/var/opt/mssql/data
+            - ./data/mssql/mssql_data_backup:/var/opt/mssql/data_backup
+            - ./logs/mssql:/var/opt/mssql/log
+            - ./secrets/mssql:/var/opt/mssql/secrets
+        environment:
+            - ACCEPT_EULA=${MSSQL_EULA}
+            - SA_PASSWORD=${MSSQL_SA_PASSWORD}
+            - MSSQL_PID=${MSSQL_PID}
+        env_file:
+            - ${ENV_FILE_PATH}
+        ports:
+            - ${MSSQL_OUTER_PORT}:${MSSQL_INNER_PORT}
+        networks:
+            product_price_tracker_common_net:
+                ipv4_address: ${MSSQL_HOST_IP}
+        restart: always
+
+    rabbitmq:
+        build: ./conf/rabbitmq
+        image: ${CONTAINER_AUTHOR}/${PROJECT_NAME}/rabbitmq_${RABBITMQ_VERSION}
+        container_name: ${PROJECT_NAME}_rabbitmq
+        env_file:
+            - ${ENV_FILE_PATH}
+        ports:
+            - ${RABBITMQ_OUTER_PORT}:${RABBITMQ_INNER_PORT}
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-celery}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-passwd123}
+            - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST:-my_vhost}
+        networks:
+            product_price_tracker_common_net:
+                ipv4_address: ${RABBITMQ_HOST_IP}
+        tty: true
+        restart: always
+
+networks:
+    product_price_tracker_common_net:
+        ipam:
+            config:
+                - subnet: ${NETWORK_SUBNET}
+                  gateway: ${NETWORK_GATEWAY}
