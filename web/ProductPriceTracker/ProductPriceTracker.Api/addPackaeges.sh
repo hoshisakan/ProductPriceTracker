@@ -1,0 +1,7 @@
+#!/bin/bash
+# Add packages to the ProductPriceTracker.Api project
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 8.0.0
+dotnet add package Swashbuckle.AspNetCore --version 6.2.3
+dotnet add package Microsoft.AspNetCore.OpenApi --version 8.0.0
+dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Sinks.File

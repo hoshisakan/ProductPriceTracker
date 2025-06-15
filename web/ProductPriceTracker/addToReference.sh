@@ -1,0 +1,3 @@
+dotnet add ProductPriceTracker.Api reference ProductPriceTracker.Core
+dotnet add ProductPriceTracker.Api reference ProductPriceTracker.Infrastructure
+dotnet add ProductPriceTracker.Infrastructure reference ProductPriceTracker.Core
