@@ -5,3 +5,6 @@ dotnet add package Swashbuckle.AspNetCore --version 6.2.3
 dotnet add package Microsoft.AspNetCore.OpenApi --version 8.0.0
 dotnet add package Serilog.AspNetCore
 dotnet add package Serilog.Sinks.File
+dotnet add package Selenium.WebDriver
+dotnet add package Selenium.Support
+dotnet add package Selenium.WebDriver.ChromeDriver

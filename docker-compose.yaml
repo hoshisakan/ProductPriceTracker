@@ -1,7 +1,44 @@
 version: '3.9'
 services:
+    backend:
+        build:
+            context: ./web
+            dockerfile: Dockerfile
+            args:
+                - DOTNET_INSTALLED_VERSION=${DOTNET_INSTALLED_VERSION}
+                - DOTNET_TIME_ZONE=${DOTNET_TIME_ZONE}
+                - DOTNET_LANG_NAME=${DOTNET_LANG_NAME}
+                - DOTNET_LANG_INPUTFILE=${DOTNET_LANG_INPUTFILE}
+                - DOTNET_LANG_CHARMAP=${DOTNET_LANG_CHARMAP}
+                - DEBIAN_FRONTEND=${DOTNET_DEBIAN_FRONTEND}
+                - DOTNET_PACKAGES_PATH=${DOTNET_PACKAGES_PATH}
+        image: ${CONTAINER_AUTHOR}/${PROJECT_NAME}/dotnet:${DOTNET_IMAGE_VERSION}
+        container_name: ${PROJECT_NAME}_backend
+        env_file:
+            - ./.env
+        environment:
+            - DOTNET_LANG_NAME=${DOTNET_LANG_NAME}
+        volumes:
+            - ./logs/backend:/var/log/backend
+        ports:
+            - ${DOTNET_OUTER_HTTP_PORT}:${DOTNET_INNER_HTTP_PORT}
+            - ${DOTNET_OUTER_HTTPS_PORT}:${DOTNET_INNER_HTTPS_PORT}
+        depends_on:
+            - mssql
+        networks:
+            product_price_tracker_common_net:
+                ipv4_address: ${DOTNET_HOST_IP}
+        tty: true
+        restart: on-failure:3
+
     mssql:
-        build: ./conf/mssql
+        build:
+            context: ./conf/mssql
+            dockerfile: Dockerfile
+            args:
+                - MSSQL_EULA=${MSSQL_EULA}
+                - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+                - MSSQL_PID=${MSSQL_PID}
         image: ${CONTAINER_AUTHOR}/${PROJECT_NAME}/mssql_${MSSQL_VERSION}
         container_name: ${PROJECT_NAME}_mssql
         volumes:
@@ -15,6 +52,7 @@ services:
             - MSSQL_PID=${MSSQL_PID}
         env_file:
             - ${ENV_FILE_PATH}
+        user: root
         ports:
             - ${MSSQL_OUTER_PORT}:${MSSQL_INNER_PORT}
         networks:

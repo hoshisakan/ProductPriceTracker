@@ -1,0 +1,2 @@
+failed to solve: mcr.microsoft.com/mssql/server:2022-latest: failed to resolve source metadata ...: EOF
+遇到此問題將 Wi-Fi 的 IPv6 Address 關掉即可

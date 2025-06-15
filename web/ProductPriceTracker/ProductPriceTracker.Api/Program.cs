@@ -8,6 +8,7 @@ using ProductPriceTracker.Core.Interface.IRepositories;
 using ProductPriceTracker.Infrastructure.Services;
 using ProductPriceTracker.Core.Interface.IServices;
 using Serilog;
+using Microsoft.Playwright;
 
 
 var configuration = new ConfigurationBuilder()
