@@ -18,4 +18,6 @@ public partial class Product
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<ProductHistory> ProductHistories { get; set; } = new List<ProductHistory>();
 }

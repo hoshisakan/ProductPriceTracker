@@ -4,11 +4,13 @@ GO
 USE ScrapeDb;
 GO
 
-CREATE TABLE ScrapeResults (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Url NVARCHAR(1000) NOT NULL,
-    Content NVARCHAR(MAX) NOT NULL,
-    CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+CREATE TABLE ProductHistory (
+    HistoryId INT IDENTITY(1,1) PRIMARY KEY,  -- 主鍵，自動遞增
+    ProductId INT NOT NULL,                   -- 對應 Product 表的主鍵
+    Price DECIMAL(18, 2) NOT NULL,            -- 當時價格
+    Stock INT NOT NULL,                       -- 當時庫存
+    CapturedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),  -- 記錄時間
+    FOREIGN KEY (ProductId) REFERENCES Product(ProductId)
 );
 GO
 -------------------------------------------------------------

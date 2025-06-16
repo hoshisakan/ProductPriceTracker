@@ -10,14 +10,16 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ScrapeDbContext _context;
-        
+
         public UnitOfWork(ScrapeDbContext context)
         {
             _context = context;
             Products = new ProductRepository(context);
+            ProductHistories = new ProductHistoryRepository(context);
         }
 
         public IProductRepository Products { get; private set; }
+        public IProductHistoryRepository ProductHistories { get; private set; }
 
         public async Task SaveAsync()
         {

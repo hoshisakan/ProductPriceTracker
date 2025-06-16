@@ -6,6 +6,7 @@ using ProductPriceTracker.Core.Interface.IServices;
 using System.Globalization;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
 
 namespace ProductPriceTracker.Infrastructure.Services
@@ -20,24 +21,22 @@ namespace ProductPriceTracker.Infrastructure.Services
             _logger = logger;
             _unitOfWork = unitOfWork;
         }
-        
 
         public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages = 3)
         {
             var products = new List<Product>();
 
             var options = new ChromeOptions();
-            options.AddArgument("--headless");  // 無頭模式
+            options.AddArgument("--headless");
             options.AddArgument("--disable-gpu");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
-            
-            // 建議設定timeout，避免卡住
+
             var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true; // 隱藏黑框視窗
+            driverService.HideCommandPromptWindow = true;
 
             using var driver = new ChromeDriver(driverService, options);
-            
+
             for (int currentPage = 1; currentPage <= maxPages; currentPage++)
             {
                 var url = $"https://www.momoshop.com.tw/search/searchShop.jsp?keyword={Uri.EscapeDataString(keyword)}&curPage={currentPage}";
@@ -45,9 +44,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                 driver.Navigate().GoToUrl(url);
 
-                // Selenium 沒有直接的 WaitUntilNetworkIdle，使用等待元素方式
-                // 等待產品列表出現，最多等10秒
-                var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 try
                 {
                     wait.Until(drv => drv.FindElements(By.CssSelector("li.listAreaLi")).Count > 0);
@@ -67,41 +64,61 @@ namespace ProductPriceTracker.Infrastructure.Services
                         var titleElement = item.FindElement(By.CssSelector("h3.prdName"));
                         var priceElement = item.FindElement(By.CssSelector("span.price b"));
                         var linkElement = item.FindElement(By.CssSelector("a.goods-img-url"));
-                        // img有時候是lazy load，可能要取src或data-src，先用src
-                        var imageElement = item.FindElement(By.CssSelector("img.prdImg"));
 
                         var productName = titleElement.Text.Trim();
-                        
-                        // 處理價格文字，如有逗號去除
                         var priceText = priceElement.Text.Replace(",", "").Trim();
-                        decimal price = 0;
-                        decimal.TryParse(priceText, NumberStyles.Any, CultureInfo.InvariantCulture, out price);
-
+                        decimal.TryParse(priceText, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal price);
                         var productLink = "https://www.momoshop.com.tw" + linkElement.GetAttribute("href");
-                        // 這裡沒用到 image，但可擴充
-                        
-                        var product = new Product
-                        {
-                            ProductName = productName,
-                            Price = price,
-                            Description = productLink,
-                            CreatedAt = DateTime.UtcNow,
-                            Stock = 100
-                        };
 
-                        _logger.LogInformation("Adding product: {ProductName} (Page {Page})", product.ProductName, currentPage);
+                        var existingProduct = await _unitOfWork.Products
+                            .GetByNameAndDescriptionAsync(productName, productLink);
 
-                        if (await _unitOfWork.Products.IsProductExistsAsync(product.ProductName, product.Description))
+                        if (existingProduct != null)
                         {
-                            _logger.LogInformation("Product {ProductName} already exists, skipping.", product.ProductName);
-                            continue;
+                            _logger.LogInformation("Found existing product: {ProductName}", productName);
+
+                            var history = new ProductHistory
+                            {
+                                ProductId = existingProduct.ProductId,
+                                Price = price,
+                                Stock = existingProduct.Stock,
+                                CapturedAt = DateTime.UtcNow
+                            };
+
+                            await _unitOfWork.ProductHistories.AddAsync(history);
+                        }
+                        else
+                        {
+                            var newProduct = new Product
+                            {
+                                ProductName = productName,
+                                Price = price,
+                                Description = productLink,
+                                CreatedAt = DateTime.UtcNow,
+                                Stock = 100
+                            };
+
+                            await _unitOfWork.Products.AddAsync(newProduct);
+                            await _unitOfWork.SaveAsync(); // 必須先存起來取得 ProductId
+
+                            var history = new ProductHistory
+                            {
+                                ProductId = newProduct.ProductId,
+                                Price = price,
+                                Stock = 100,
+                                CapturedAt = DateTime.UtcNow
+                            };
+
+                            await _unitOfWork.ProductHistories.AddAsync(history);
+                            products.Add(newProduct);
                         }
 
-                        products.Add(product);
+                        // 可選擇：如果你要立即保存歷史也可以加這一行
+                        await _unitOfWork.SaveAsync();
                     }
                     catch (NoSuchElementException ex)
                     {
-                        _logger.LogWarning("Some product info missing, skipping item. Error: {Message}", ex.Message);
+                        _logger.LogWarning("Missing data. Error: {Message}", ex.Message);
                         continue;
                     }
                 }
@@ -109,5 +126,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
             return products;
         }
+
+        
     }
 }

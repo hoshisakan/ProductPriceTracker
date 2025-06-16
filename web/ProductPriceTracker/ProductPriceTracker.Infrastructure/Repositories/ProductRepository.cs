@@ -31,5 +31,12 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
         {
             return await _context.Products.AnyAsync(p => p.ProductName == productName && p.Description == productDescription);
         }
+
+        public async Task<Product> GetByNameAndDescriptionAsync(string productName, string productDescription)
+        {
+            return await _context.Products
+                .Where(p => p.ProductName == productName && p.Description == productDescription)
+                .FirstOrDefaultAsync();
+        }
     }
 }

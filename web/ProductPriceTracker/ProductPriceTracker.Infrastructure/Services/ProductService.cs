@@ -65,5 +65,10 @@ namespace ProductPriceTracker.Infrastructure.Services
         {
             return await _unitOfWork.Products.IsProductExistsAsync(productName, productDescription);
         }
+
+        public async Task<Product> GetByNameAndDescriptionAsync(string productName, string productDescription)
+        {
+            return await _unitOfWork.Products.GetByNameAndDescriptionAsync(productName, productDescription);
+        }
     }
 }

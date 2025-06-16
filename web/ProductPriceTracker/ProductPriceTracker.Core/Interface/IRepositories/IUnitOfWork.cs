@@ -9,6 +9,7 @@ namespace ProductPriceTracker.Core.Interface.IRepositories
     public interface IUnitOfWork
     {
         IProductRepository Products { get; }
+        IProductHistoryRepository ProductHistories { get; }
         Task SaveAsync();
     }
 }

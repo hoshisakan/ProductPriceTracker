@@ -14,6 +14,6 @@ namespace ProductPriceTracker.Core.Interface.IServices
         Task<bool> UpdateProductAsync(int id, Product product);
         Task<bool> DeleteProductAsync(int id);
         Task<bool> IsProductExistsAsync(string productName, string productDescription);
-
+        Task<Product> GetByNameAndDescriptionAsync(string productName, string productDescription);
     }
 }
