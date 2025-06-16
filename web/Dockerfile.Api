@@ -72,8 +72,5 @@ RUN dotnet publish -c Release -o /app/production/backend
 # # For production
 WORKDIR /app/production/backend
 
-# 設定環境變數，避免 Playwright 重複下載瀏覽器
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-
 # Run the app
 ENTRYPOINT [ "dotnet", "ProductPriceTracker.Api.dll" ]

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-ProductPriceTracker.Worker-cdc49400-39bc-4a0a-8c76-6bca462a618f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductPriceTracker.Core\ProductPriceTracker.Core.csproj" />
+    <ProjectReference Include="..\ProductPriceTracker.Infrastructure\ProductPriceTracker.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

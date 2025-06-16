@@ -3,7 +3,7 @@ services:
     backend:
         build:
             context: ./web
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.Api
             args:
                 - DOTNET_INSTALLED_VERSION=${DOTNET_INSTALLED_VERSION}
                 - DOTNET_TIME_ZONE=${DOTNET_TIME_ZONE}
@@ -67,7 +67,8 @@ services:
         env_file:
             - ${ENV_FILE_PATH}
         ports:
-            - ${RABBITMQ_OUTER_PORT}:${RABBITMQ_INNER_PORT}
+            - ${RABBITMQ_HOST_OUTER_PORT}:${RABBITMQ_HOST_INNER_PORT}
+            - ${RABBITMQ_MANAGEMENT_HOST_OUTER_PORT}:${RABBITMQ_MANAGEMENT_HOST_INNER_PORT}
         environment:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-celery}
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-passwd123}

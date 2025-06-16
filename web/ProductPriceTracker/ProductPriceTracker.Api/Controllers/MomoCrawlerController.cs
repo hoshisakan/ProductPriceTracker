@@ -19,6 +19,7 @@ namespace ProductPriceTracker.Api.Controllers
         private readonly IProductService _productService;
         private readonly ILogger<MomoCrawlerController> _logger;
 
+
         public MomoCrawlerController(IMomoCrawlerService crawlerService, IProductService productService, ILogger<MomoCrawlerController> logger)
         {
             _crawlerService = crawlerService;
