@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-ProductPriceTracker.Worker-cdc49400-39bc-4a0a-8c76-6bca462a618f</UserSecretsId>
+    <UserSecretsId>dotnet-ProductPriceTracker.Worker-c7494729-fc8a-4e9f-9824-280cbef5d351</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
