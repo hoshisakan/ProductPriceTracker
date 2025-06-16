@@ -1,28 +1,29 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Playwright;
-using ProductPriceTracker.Core.Entities;
-using ProductPriceTracker.Core.Interface.IRepositories;
-using ProductPriceTracker.Core.Interface.IServices;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-
+using ProductPriceTracker.Core.Entities;
+using ProductPriceTracker.Core.Interface.IRepositories;
+using ProductPriceTracker.Core.Interface.IServices;
 
 namespace ProductPriceTracker.Infrastructure.Services
 {
-    public class MomoCrawlerService : IMomoCrawlerService
+    public class PchomeCrawlerService : IPchomeCrawlerService
     {
+        private readonly ILogger<PchomeCrawlerService> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<MomoCrawlerService> _logger;
 
-        public MomoCrawlerService(IUnitOfWork unitOfWork, ILogger<MomoCrawlerService> logger)
+        public PchomeCrawlerService(ILogger<PchomeCrawlerService> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages = 3)
+        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages)
         {
             var products = new List<Product>();
 
@@ -39,7 +40,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
             for (int currentPage = 1; currentPage <= maxPages; currentPage++)
             {
-                var url = $"https://www.momoshop.com.tw/search/searchShop.jsp?keyword={Uri.EscapeDataString(keyword)}&curPage={currentPage}";
+                var url = $"https://24h.pchome.com.tw/search/?q={Uri.EscapeDataString(keyword)}&p={currentPage}";
                 _logger.LogInformation("Loading page: {PageUrl}", url);
 
                 driver.Navigate().GoToUrl(url);
@@ -47,7 +48,7 @@ namespace ProductPriceTracker.Infrastructure.Services
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 try
                 {
-                    wait.Until(drv => drv.FindElements(By.CssSelector("li.listAreaLi")).Count > 0);
+                    wait.Until(drv => drv.FindElements(By.CssSelector("li.c-listInfoGrid__item")).Count > 0);
                 }
                 catch (WebDriverTimeoutException)
                 {
@@ -55,20 +56,23 @@ namespace ProductPriceTracker.Infrastructure.Services
                     break;
                 }
 
-                var productElements = driver.FindElements(By.CssSelector("li.listAreaLi"));
+                var productElements = driver.FindElements(By.CssSelector("li.c-listInfoGrid__item"));
 
                 foreach (var item in productElements)
                 {
                     try
                     {
-                        var titleElement = item.FindElement(By.CssSelector("h3.prdName"));
-                        var priceElement = item.FindElement(By.CssSelector("span.price b"));
-                        var linkElement = item.FindElement(By.CssSelector("a.goods-img-url"));
+                        var linkElem = item.FindElement(By.CssSelector("a.c-prodInfoV2__link"));
+                        var imgElem = item.FindElement(By.CssSelector("img"));
+                        var priceElem = item.FindElement(By.CssSelector("div.c-prodInfoV2__priceValue--m"));
 
-                        var productName = titleElement.Text.Trim();
-                        var priceText = priceElement.Text.Replace(",", "").Trim();
+                        string productName = imgElem.GetAttribute("alt")?.Trim() ?? "無名稱";
+                        string relativeLink = linkElem.GetAttribute("href")?.Trim() ?? "";
+                        string productLink = relativeLink.StartsWith("http") ? relativeLink : "https://24h.pchome.com.tw" + relativeLink;
+
+                        var priceText = priceElem.Text.Replace("$", "").Replace(",", "").Trim();
                         decimal.TryParse(priceText, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal price);
-                        var productLink = "https://www.momoshop.com.tw" + linkElement.GetAttribute("href");
+                        int stock = 1; // PChome 預設
 
                         var existingProduct = await _unitOfWork.Products
                             .GetByNameAndDescriptionAsync(productName, productLink);
@@ -95,17 +99,17 @@ namespace ProductPriceTracker.Infrastructure.Services
                                 Price = price,
                                 Description = productLink,
                                 CreatedAt = DateTime.UtcNow,
-                                Stock = 100
+                                Stock = stock
                             };
 
                             await _unitOfWork.Products.AddAsync(newProduct);
-                            await _unitOfWork.SaveAsync(); // 必須先存起來取得 ProductId
+                            await _unitOfWork.SaveAsync(); // 拿到 ProductId
 
                             var history = new ProductHistory
                             {
                                 ProductId = newProduct.ProductId,
                                 Price = price,
-                                Stock = 100,
+                                Stock = stock,
                                 CapturedAt = DateTime.UtcNow
                             };
 
@@ -113,17 +117,19 @@ namespace ProductPriceTracker.Infrastructure.Services
                             products.Add(newProduct);
                         }
 
-                        // 可選擇：如果你要立即保存歷史也可以加這一行
                         await _unitOfWork.SaveAsync();
                     }
                     catch (NoSuchElementException ex)
                     {
-                        _logger.LogWarning("Missing data. Error: {Message}", ex.Message);
+                        _logger.LogWarning("Missing product element data: {Message}", ex.Message);
                         continue;
                     }
                 }
             }
+
+            driver.Quit();
             return products;
         }
+
     }
 }

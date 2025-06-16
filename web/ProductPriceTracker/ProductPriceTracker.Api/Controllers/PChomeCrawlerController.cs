@@ -13,13 +13,13 @@ namespace ProductPriceTracker.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MomoCrawlerController : ControllerBase
+    public class PChomeCrawlerController : ControllerBase
     {
-        private readonly IMomoCrawlerService _crawlerService;
+        private readonly IPchomeCrawlerService _crawlerService;
         private readonly IProductService _productService;
-        private readonly ILogger<MomoCrawlerController> _logger;
+        private readonly ILogger<PChomeCrawlerController> _logger;
 
-        public MomoCrawlerController(IMomoCrawlerService crawlerService, IProductService productService, ILogger<MomoCrawlerController> logger)
+        public PChomeCrawlerController(IPchomeCrawlerService crawlerService, IProductService productService, ILogger<PChomeCrawlerController> logger)
         {
             _crawlerService = crawlerService;
             _productService = productService;

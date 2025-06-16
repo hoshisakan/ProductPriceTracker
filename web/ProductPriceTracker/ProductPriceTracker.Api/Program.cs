@@ -38,6 +38,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductHistoryRepository, ProductHistoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMomoCrawlerService, MomoCrawlerService>();
+builder.Services.AddScoped<IPchomeCrawlerService, PchomeCrawlerService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductHistoryService, ProductHistoryService>();
 
