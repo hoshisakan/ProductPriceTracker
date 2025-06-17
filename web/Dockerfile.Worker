@@ -18,7 +18,7 @@ RUN apt-get update && apt install -y wget locales gnupg2 apt-transport-https \
     ca-certificates curl software-properties-common \
     gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 \
     libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation \
-    libappindicator1 libnss3 lsb-release xdg-utils tzdata
+    libappindicator1 libnss3 lsb-release xdg-utils tzdata iputils-ping -y
 
 # Add the Microsoft package signing key to your list of trusted keys and add the package repository
 RUN wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -64,13 +64,13 @@ WORKDIR /app/ProductPriceTracker.Worker
 RUN dotnet restore
 
 # # # Build the app
-RUN dotnet publish -c Release -o /app/production/backend
+RUN dotnet publish -c Release -o /app/production/worker
 
-# COPY certs /app/production/backend/certs
+# COPY certs /app/production/worker/certs
 
 # # WORKDIR backend directory
 # # For production
-WORKDIR /app/production/backend
+WORKDIR /app/production/worker
 
 # Run the app
 ENTRYPOINT [ "dotnet", "ProductPriceTracker.Worker.dll" ]

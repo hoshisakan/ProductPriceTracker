@@ -9,6 +9,7 @@ using ProductPriceTracker.Infrastructure.Services;
 using ProductPriceTracker.Core.Interface.IServices;
 using Serilog;
 using Microsoft.Playwright;
+using RabbitMQ.Client;
 
 
 var configuration = new ConfigurationBuilder()
@@ -33,7 +34,43 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 builder.Services.AddDbContext<ScrapeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2️⃣ 註冊 Repository DI
+var rabbitConfig = configuration.GetSection("RabbitMQ");
+
+// 2️⃣ 註冊 DI
+var factory = new ConnectionFactory()
+{
+    HostName = rabbitConfig["HostName"],
+    Port = int.Parse(rabbitConfig["Port"]),
+    UserName = rabbitConfig["UserName"],
+    Password = rabbitConfig["Password"],
+    VirtualHost = rabbitConfig["VirtualHost"]
+};
+
+const int maxRetries = 5;
+int retriesLeft = maxRetries;
+IConnection connection = null;
+
+while (retriesLeft > 0)
+{
+    try
+    {
+        connection = factory.CreateConnection();
+        Log.Information("成功連線 RabbitMQ");
+        break; // 成功跳出迴圈
+    }
+    catch (RabbitMQ.Client.Exceptions.BrokerUnreachableException ex)
+    {
+        retriesLeft--;
+        Log.Error($"連線 RabbitMQ 失敗，剩餘嘗試次數：{retriesLeft}，錯誤訊息：{ex.Message}");
+        if (retriesLeft == 0)
+        {
+            throw; // 用盡重試次數仍失敗，丟出例外
+        }
+        Thread.Sleep(3000); // 等待 3 秒後再重試
+    }
+}
+
+builder.Services.AddSingleton<IConnection>(connection);
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductHistoryRepository, ProductHistoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -8,3 +8,4 @@ dotnet add package Serilog.Sinks.File
 dotnet add package Selenium.WebDriver
 dotnet add package Selenium.Support
 dotnet add package Selenium.WebDriver.ChromeDriver
+dotnet add package RabbitMQ.Client --version 6.4.0
