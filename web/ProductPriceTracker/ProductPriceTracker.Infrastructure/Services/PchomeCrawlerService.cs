@@ -23,7 +23,7 @@ namespace ProductPriceTracker.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages)
+        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages, string taskId)
         {
             var products = new List<Product>();
 
@@ -99,7 +99,8 @@ namespace ProductPriceTracker.Infrastructure.Services
                                 Price = price,
                                 Description = productLink,
                                 CreatedAt = DateTime.UtcNow,
-                                Stock = stock
+                                Stock = stock,
+                                TaskId = taskId
                             };
 
                             await _unitOfWork.Products.AddAsync(newProduct);

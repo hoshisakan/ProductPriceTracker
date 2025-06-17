@@ -38,11 +38,14 @@ public class CrawlRequestsController  : ControllerBase
         // 將 JSON 字串轉成 UTF-8 編碼的位元組陣列，準備傳送
         var body = Encoding.UTF8.GetBytes(json);
 
+        var properties = channel.CreateBasicProperties();
+        properties.Persistent = true; // 設定訊息為持久化，確保 RabbitMQ 重啟後仍然存在
+
         // 發佈訊息到 RabbitMQ，參數說明如下：
         channel.BasicPublish(
             exchange: "",                          // 使用預設的 exchange（default exchange）
             routingKey: "product_price_updates_queue", // 指定 routing key 為隊列名稱，讓訊息送進指定的隊列
-            basicProperties: null,                 // 不設定額外屬性（像是持久性、標頭等）
+            basicProperties: properties,                 // 不設定額外屬性（像是持久性、標頭等）
             body: body                             // 訊息內容本體，為 byte[] 格式
         );
 
