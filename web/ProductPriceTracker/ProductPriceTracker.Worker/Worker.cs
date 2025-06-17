@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using ProductPriceTracker.Infrastructure.Services; // 注入 Momo 與 PCHome 爬蟲服務
 using ProductPriceTracker.Core.Dtos;
-using ProductPriceTracker.Core.Interface.IServices; // CrawlRequest 請求 DTO
+using ProductPriceTracker.Core.Interface.IServices;
+using ProductPriceTracker.Core.Entities;
+using ProductPriceTracker.Core.Interface.IRepositories; // CrawlRequest 請求 DTO
 
 
 public class Worker : BackgroundService
@@ -75,6 +77,7 @@ public class Worker : BackgroundService
     {
         // 建立一個 RabbitMQ 消費者，監聽該頻道上的訊息
         var consumer = new EventingBasicConsumer(_channel);
+        // var consumer = new AsyncEventingBasicConsumer(_channel);
 
         // 訂閱收到訊息的事件處理函式
         consumer.Received += async (model, ea) =>
@@ -101,8 +104,22 @@ public class Worker : BackgroundService
                     return;
                 }
 
-                // 使用依賴注入解析 Momo 與 PCHome 爬蟲服務
+                // 產生任務編號（例如 Task-20250617-0001）
+                var taskId = $"Task-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8]}";
+
+                var crawlerTask = new CrawlerTask
+                {
+                    TaskId = taskId,
+                    Source = "{" + $"Mode: {crawlRequest.Mode}, Keyword: {crawlRequest.Keyword}, MaxPage: {crawlRequest.MaxPage}" + "}", // 可以視為來源網站或內容
+                    // Source = message, // 可以視為來源網站或內容
+                    Status = "Received"
+                };
+
                 using var scope = _services.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                await unitOfWork.CrawlerTasks.AddAsync(crawlerTask);
+
+                // 使用依賴注入解析 Momo 與 PCHome 爬蟲服務
                 var momoCrawlerService = scope.ServiceProvider.GetRequiredService<IMomoCrawlerService>();
                 var pchomeCrawlerService = scope.ServiceProvider.GetRequiredService<IPchomeCrawlerService>();
 
@@ -110,15 +127,17 @@ public class Worker : BackgroundService
                 switch (crawlRequest.Mode.ToLower())
                 {
                     case "momo":
-                        await momoCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage);
+                        await momoCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId);
                         break;
                     case "pchome":
-                        await pchomeCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage);
+                        await pchomeCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId);
                         break;
                     default:
                         _logger.LogWarning("Unknown mode: {Mode}", crawlRequest.Mode);
                         break;
-                }
+                 }
+                _logger.LogInformation("Processing crawl request for mode: {Mode}, keyword: {Keyword}, maxPage: {MaxPage}",
+                    crawlRequest.Mode, crawlRequest.Keyword, crawlRequest.MaxPage);
 
                 // 處理成功，手動回覆 ack
                 _channel.BasicAck(ea.DeliveryTag, false);

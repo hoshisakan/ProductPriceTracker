@@ -78,6 +78,8 @@ builder.Services.AddScoped<IMomoCrawlerService, MomoCrawlerService>();
 builder.Services.AddScoped<IPchomeCrawlerService, PchomeCrawlerService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductHistoryService, ProductHistoryService>();
+builder.Services.AddScoped<ICrawlerTaskRepository, CrawlerTaskRepository>();
+builder.Services.AddScoped<ICrawlerTaskService, CrawlerTaskService>();
 
 
 // Swagger
