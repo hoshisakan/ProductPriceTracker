@@ -1,5 +1,6 @@
 // src/pages/CrawlerTaskList.js
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getToken } from '../services/auth';
 
@@ -11,7 +12,7 @@ export default function CrawlerTaskList() {
         const fetchTasks = async () => {
             try {
                 const response = await axios.post(
-                    'http://localhost:5003/api/crawlertask/get-crawler-task',
+                    'http://localhost/api/crawlertask/get-crawler-task',
                     {},
                     { headers: { Authorization: `Bearer ${getToken()}` } }
                 );
@@ -26,6 +27,13 @@ export default function CrawlerTaskList() {
 
     return (
         <div className="container py-5">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="fw-bold">商品爬蟲任務</h2>
+                {/* 回首頁連結 */}
+                <Link to="/crawlerrequest" className="btn btn-outline-primary">
+                    回首頁
+                </Link>
+            </div>
             <div className="card shadow-sm">
                 <div className="card-body">
                     <h3 className="mb-4 fw-bold">📋 爬蟲任務列表</h3>

@@ -21,7 +21,7 @@ export default function CrawlerRequest() {
         const token = getToken();
         try {
             await axios.post(
-                'http://localhost:5003/api/crawlrequests',
+                'http://localhost/api/crawlrequests',
                 { mode, keyword, maxPage: Number(maxPage) },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -102,7 +102,7 @@ export default function CrawlerRequest() {
                     📋 查看所有爬蟲任務
                 </Link>
                 <Link to="/product-history" className="btn btn-outline-info">
-                    查詢歷史價格
+                    📋 查詢歷史價格
                 </Link>
             </div>
         </div>

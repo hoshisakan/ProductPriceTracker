@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getToken, logout, isAuthenticated } from '../services/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
 import {
@@ -35,7 +35,7 @@ export default function ProductHistory() {
         const token = getToken();
         try {
             const res = await axios.post(
-                'http://localhost:5003/api/producthistory/get-history',
+                'http://localhost/api/producthistory/get-history',
                 { taskId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -85,6 +85,13 @@ export default function ProductHistory() {
 
     return (
         <div className="container py-5">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="fw-bold">商品爬蟲任務</h2>
+                {/* 回首頁連結 */}
+                <Link to="/crawlerrequest" className="btn btn-outline-primary">
+                    回首頁
+                </Link>
+            </div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="fw-bold">查詢任務歷史價格</h2>
                 <button
