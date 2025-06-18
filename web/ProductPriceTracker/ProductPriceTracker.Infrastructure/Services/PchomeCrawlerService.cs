@@ -23,8 +23,10 @@ namespace ProductPriceTracker.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages, string taskId)
+        public async Task<List<Product>> GetProductsAsync(string keyword, int maxPages, string taskId, int userId)
         {
+            _logger.LogInformation("User {UserId} is searching for products with keyword: {Keyword}, max pages: {MaxPages}, taskId: {TaskId}",
+                userId, keyword, maxPages, taskId);
             var products = new List<Product>();
 
             var options = new ChromeOptions();
@@ -72,7 +74,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                         var priceText = priceElem.Text.Replace("$", "").Replace(",", "").Trim();
                         decimal.TryParse(priceText, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal price);
-                        int stock = 1; // PChome 預設
+                        int stock = 100; // PChome 預設
 
                         var existingProduct = await _unitOfWork.Products
                             .GetByNameAndDescriptionAsync(productName, productLink);
@@ -83,6 +85,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                             var history = new ProductHistory
                             {
+                                UserId = userId,
                                 ProductId = existingProduct.ProductId,
                                 Price = price,
                                 Stock = existingProduct.Stock,
@@ -100,7 +103,8 @@ namespace ProductPriceTracker.Infrastructure.Services
                                 Description = productLink,
                                 CreatedAt = DateTime.UtcNow,
                                 Stock = stock,
-                                TaskId = taskId
+                                TaskId = taskId,
+                                UserId = userId
                             };
 
                             await _unitOfWork.Products.AddAsync(newProduct);
@@ -108,6 +112,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                             var history = new ProductHistory
                             {
+                                UserId = userId,
                                 ProductId = newProduct.ProductId,
                                 Price = price,
                                 Stock = stock,

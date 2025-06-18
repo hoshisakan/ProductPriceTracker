@@ -20,6 +20,7 @@ public class Worker : BackgroundService
     private readonly IConfiguration _configuration;
     private IConnection? _connection;
     private IModel? _channel;
+    private readonly string _queueName = "product_price_updates_queue"; // 定義 RabbitMQ 隊列名稱
 
     public Worker(ILogger<Worker> logger, IServiceProvider services, IConfiguration configuration)
     {
@@ -47,7 +48,7 @@ public class Worker : BackgroundService
                 _connection = factory.CreateConnection();
                 _channel = _connection.CreateModel();
 
-                _channel.QueueDeclare(queue: "product_price_updates_queue",
+                _channel.QueueDeclare(queue: _queueName,
                                     durable: true,
                                     exclusive: false,
                                     autoDelete: false,
@@ -93,7 +94,7 @@ public class Worker : BackgroundService
             try
             {
                 // // 將 JSON 字串反序列化成 CrawlRequest 物件
-                var crawlRequest = System.Text.Json.JsonSerializer.Deserialize<CrawlRequest>(message);
+                var crawlRequest = System.Text.Json.JsonSerializer.Deserialize<CrawlStorageDto>(message);
 
                 // 檢查反序列化是否成功
                 if (crawlRequest == null)
@@ -112,7 +113,8 @@ public class Worker : BackgroundService
                     TaskId = taskId,
                     Source = "{" + $"Mode: {crawlRequest.Mode}, Keyword: {crawlRequest.Keyword}, MaxPage: {crawlRequest.MaxPage}" + "}", // 可以視為來源網站或內容
                     // Source = message, // 可以視為來源網站或內容
-                    Status = "Received"
+                    Status = "Received",
+                    UserId = crawlRequest.UserId, // 從 CrawlRequest 中取得 UserId
                 };
 
                 using var scope = _services.CreateScope();
@@ -127,15 +129,15 @@ public class Worker : BackgroundService
                 switch (crawlRequest.Mode.ToLower())
                 {
                     case "momo":
-                        await momoCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId);
+                        await momoCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId, crawlRequest.UserId);
                         break;
                     case "pchome":
-                        await pchomeCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId);
+                        await pchomeCrawlerService.GetProductsAsync(crawlRequest.Keyword, crawlRequest.MaxPage, taskId, crawlRequest.UserId);
                         break;
                     default:
                         _logger.LogWarning("Unknown mode: {Mode}", crawlRequest.Mode);
                         break;
-                 }
+                }
                 _logger.LogInformation("Processing crawl request for mode: {Mode}, keyword: {Keyword}, maxPage: {MaxPage}",
                     crawlRequest.Mode, crawlRequest.Keyword, crawlRequest.MaxPage);
 
@@ -151,7 +153,7 @@ public class Worker : BackgroundService
         };
 
         // 開始消費指定佇列的訊息，autoAck 設為 false 表示由程式手動回覆訊息已處理完成
-        _channel.BasicConsume(queue: "product_price_updates_queue",
+        _channel.BasicConsume(queue: _queueName,
                             autoAck: false,  // 手動回覆 ack，確保穩定處理
                             consumer: consumer);
 

@@ -9,6 +9,8 @@ public partial class ProductHistory
 
     public int ProductId { get; set; }
 
+    public int UserId { get; set; }
+
     public decimal Price { get; set; }
 
     public int Stock { get; set; }
@@ -16,4 +18,6 @@ public partial class ProductHistory
     public DateTime CapturedAt { get; set; }
 
     public virtual Product Product { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

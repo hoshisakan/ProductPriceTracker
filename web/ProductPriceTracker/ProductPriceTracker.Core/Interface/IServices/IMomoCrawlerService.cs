@@ -8,6 +8,6 @@ namespace ProductPriceTracker.Core.Interface.IServices
 {
     public interface IMomoCrawlerService
     {
-        Task<List<Product>> GetProductsAsync(string keyword, int maxPages, string taskId);
+        Task<List<Product>> GetProductsAsync(string keyword, int maxPages, string taskId, int userId);
     }
 }

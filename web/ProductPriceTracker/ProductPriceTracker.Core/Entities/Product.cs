@@ -19,9 +19,13 @@ public partial class Product
 
     public DateTime? UpdatedAt { get; set; }
 
-    public string? TaskId { get; set; }
+    public string TaskId { get; set; } = null!;
+
+    public int UserId { get; set; }
 
     public virtual ICollection<ProductHistory> ProductHistories { get; set; } = new List<ProductHistory>();
 
-    public virtual CrawlerTask? Task { get; set; }
+    public virtual CrawlerTask Task { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

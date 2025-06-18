@@ -11,6 +11,7 @@ namespace ProductPriceTracker.Core.Interface.IRepositories
         IProductRepository Products { get; }
         IProductHistoryRepository ProductHistories { get; }
         ICrawlerTaskRepository CrawlerTasks { get; }
+        IUserRepository Users { get; }
         Task SaveAsync();
     }
 }

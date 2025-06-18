@@ -17,11 +17,13 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
             Products = new ProductRepository(context);
             ProductHistories = new ProductHistoryRepository(context);
             CrawlerTasks = new CrawlerTaskRepository(context);
+            Users = new UserRepository(context);
         }
 
         public IProductRepository Products { get; private set; }
         public IProductHistoryRepository ProductHistories { get; private set; }
         public ICrawlerTaskRepository CrawlerTasks { get; private set; }
+        public IUserRepository Users { get; private set; }
 
         public async Task SaveAsync()
         {
