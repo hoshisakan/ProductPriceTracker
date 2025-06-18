@@ -13,6 +13,8 @@ using RabbitMQ.Client;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
+using ProductPriceTracker.Infrastructure.Services.Jobs;
 
 
 var configuration = new ConfigurationBuilder()
@@ -72,6 +74,27 @@ while (retriesLeft > 0)
         Thread.Sleep(3000); // 等待 3 秒後再重試
     }
 }
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+
+    var jobKey = new JobKey("PostgresBackupJob");
+
+    q.AddJob<SqlServerBackupJob>(opts => opts.WithIdentity(jobKey));
+
+    // q.AddTrigger(t => t
+    //     .ForJob(jobKey)
+    //     .WithIdentity("PostgresBackupJob-trigger")
+    //     .WithCronSchedule("0 * * ? * *")); // ⏱️ 每分鐘執行一次
+
+    q.AddTrigger(t => t
+        .ForJob(jobKey)
+        .WithIdentity("PostgresBackupJob-trigger")
+        .WithCronSchedule("0 0/30 * ? * *")); // 每半小時執行一次
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 builder.Services.AddSingleton<IConnection>(connection);
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

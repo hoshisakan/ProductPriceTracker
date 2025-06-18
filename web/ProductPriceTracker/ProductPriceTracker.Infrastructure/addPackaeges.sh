@@ -8,3 +8,5 @@ dotnet add package Selenium.WebDriver
 dotnet add package Selenium.WebDriver.ChromeDriver
 dotnet add package Selenium.Support
 dotnet add package BCrypt.Net-Next
+dotnet add package System.Data.SqlClient
+dotnet add package Quartz.Extensions.Hosting

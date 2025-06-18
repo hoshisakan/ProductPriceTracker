@@ -10,3 +10,4 @@ dotnet add package Selenium.Support
 dotnet add package Selenium.WebDriver.ChromeDriver
 dotnet add package RabbitMQ.Client --version 6.4.0
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.0
+dotnet add package Quartz.Extensions.Hosting

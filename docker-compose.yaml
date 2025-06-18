@@ -47,8 +47,14 @@ services:
             - ./.env
         environment:
             - DOTNET_LANG_NAME=${DOTNET_LANG_NAME}
+            - MSSQL_BACKUP_PATH=${MSSQL_BACKUP_PATH}
+            - MSSQL_HOST_IP=${MSSQL_HOST_IP}
+            - MSSQL_SA_USER=${MSSQL_SA_USER}
+            - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+            - MSSQL_DATABASE=${MSSQL_DATABASE}
         volumes:
             - ./logs/backend:/var/log/backend
+            - ./data/mssql/mssql_data_backup:/var/opt/mssql/data_backup
         ports:
             - ${DOTNET_OUTER_HTTP_PORT}:${DOTNET_INNER_HTTP_PORT}
             - ${DOTNET_OUTER_HTTPS_PORT}:${DOTNET_INNER_HTTPS_PORT}
