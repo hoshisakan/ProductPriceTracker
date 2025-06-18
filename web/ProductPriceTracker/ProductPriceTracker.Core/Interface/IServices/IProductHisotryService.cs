@@ -9,6 +9,7 @@ namespace ProductPriceTracker.Core.Interface.IServices
     public interface IProductHistoryService
     {
         Task<List<ProductHistory>> GetAllProductHitoriesAsync();
+        Task<List<ProductHistory>> GetProductHistoriesByTaskIdAsync(string taskId);
         Task<ProductHistory> GetProductHistoryByIdAsync(int id);
         Task AddProductHistoryAsync(ProductHistory productHistory);
         Task<bool> UpdateProductHistoryAsync(int id, ProductHistory productHistory);

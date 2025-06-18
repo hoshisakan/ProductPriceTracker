@@ -90,18 +90,18 @@ builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
 
-    var jobKey = new JobKey("PostgresBackupJob");
+    var jobKey = new JobKey("MSSQLBackupJob");
 
     q.AddJob<SqlServerBackupJob>(opts => opts.WithIdentity(jobKey));
 
     // q.AddTrigger(t => t
     //     .ForJob(jobKey)
-    //     .WithIdentity("PostgresBackupJob-trigger")
+    //     .WithIdentity("MSSQLBackupJob-trigger")
     //     .WithCronSchedule("0 * * ? * *")); // ⏱️ 每分鐘執行一次
 
     q.AddTrigger(t => t
         .ForJob(jobKey)
-        .WithIdentity("PostgresBackupJob-trigger")
+        .WithIdentity("MSSQLBackupJob-trigger")
         .WithCronSchedule("0 0/30 * ? * *")); // 每半小時執行一次
 });
 

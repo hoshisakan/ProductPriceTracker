@@ -22,6 +22,13 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
             return await _context.ProductHistories.FindAsync(id) ?? throw new KeyNotFoundException("Product history not found");
         }
 
+        public async Task<List<ProductHistory>> GetProductHistoriesByTaskIdAsync(string taskId)
+        {
+            return await _context.ProductHistories
+                .Where(ph => ph.TaskId == taskId)
+                .ToListAsync();
+        }
+
         public void Update(ProductHistory productHistory)
         {
             _context.ProductHistories.Update(productHistory);

@@ -79,6 +79,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                             var history = new ProductHistory
                             {
+                                TaskId = taskId,
                                 UserId = userId,
                                 ProductId = existingProduct.ProductId,
                                 Price = price,
@@ -106,6 +107,7 @@ namespace ProductPriceTracker.Infrastructure.Services
 
                             var history = new ProductHistory
                             {
+                                TaskId = taskId,
                                 UserId = userId,
                                 ProductId = newProduct.ProductId,
                                 Price = price,

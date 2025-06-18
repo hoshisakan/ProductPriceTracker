@@ -9,6 +9,8 @@ public partial class ProductHistory
 
     public int ProductId { get; set; }
 
+    public string TaskId { get; set; } = null!;
+
     public int UserId { get; set; }
 
     public decimal Price { get; set; }

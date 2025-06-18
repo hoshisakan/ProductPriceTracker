@@ -22,6 +22,13 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
             return await _context.Products.FindAsync(id) ?? throw new KeyNotFoundException("Product not found");
         }
 
+        public async Task<List<Product>> GetProductsByTaskIdAsync(string taskId)
+        {
+            return await _context.Products
+                .Where(p => p.TaskId == taskId)
+                .ToListAsync();
+        }
+
         public void Update(Product product)
         {
             _context.Products.Update(product);

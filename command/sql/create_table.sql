@@ -45,11 +45,13 @@ CREATE TABLE dbo.Products
 CREATE TABLE dbo.ProductHistories ( 
     HistoryId INT IDENTITY(1,1) PRIMARY KEY,       -- 主鍵，自動遞增
     ProductId INT NOT NULL,                         -- 對應 Products 表的主鍵
+    TaskId NVARCHAR(50) NOT NULL,   
     UserId INT NOT NULL,                            -- 對應 Users 表的主鍵
     Price DECIMAL(18, 2) NOT NULL,                  -- 當時價格
     Stock INT NOT NULL,                             -- 當時庫存
     CapturedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),  -- 記錄時間
 
     CONSTRAINT FK_ProductHistories_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId),
-    CONSTRAINT FK_ProductHistories_Users FOREIGN KEY (UserId) REFERENCES Users(Id)
+    CONSTRAINT FK_ProductHistories_Users FOREIGN KEY (UserId) REFERENCES Users(Id),
+    CONSTRAINT FK_ProductHistories_CrawlerTasks FOREIGN KEY (TaskId) REFERENCES CrawlerTasks(TaskId)
 );

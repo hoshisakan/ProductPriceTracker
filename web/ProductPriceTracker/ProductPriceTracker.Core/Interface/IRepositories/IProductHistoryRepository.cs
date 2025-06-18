@@ -10,5 +10,6 @@ namespace ProductPriceTracker.Core.Interface.IRepositories
     {
         void Update(ProductHistory product);
         Task<ProductHistory> GetProductHistoryByIdAsync(int id);
+        Task<List<ProductHistory>> GetProductHistoriesByTaskIdAsync(string taskId);
     }
 }

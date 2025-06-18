@@ -40,6 +40,11 @@ namespace ProductPriceTracker.Infrastructure.Services
             return _unitOfWork.Products.GetAllAsync();
         }
 
+        public Task<List<Product>> GetProductsByTaskIdAsync(string taskId)
+        {
+            return _unitOfWork.Products.GetProductsByTaskIdAsync(taskId);
+        }
+
         public Task<Product> GetProductByIdAsync(int id)
         {
             return _unitOfWork.Products.GetProductByIdAsync(id);

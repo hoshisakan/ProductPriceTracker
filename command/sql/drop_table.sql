@@ -1,3 +1,3 @@
-DROP TABLE dbo.ProductHistory;
-DROP TABLE dbo.Product;
+DROP TABLE dbo.ProductHistories;
+DROP TABLE dbo.Products;
 DROP TABLE dbo.CrawlerTasks;;
