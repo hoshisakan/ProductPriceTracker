@@ -149,7 +149,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Notes API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Product Price Tracker API", Version = "v1" });
 
     // 加入 JWT Bearer 認證設定
     var securityScheme = new OpenApiSecurityScheme
