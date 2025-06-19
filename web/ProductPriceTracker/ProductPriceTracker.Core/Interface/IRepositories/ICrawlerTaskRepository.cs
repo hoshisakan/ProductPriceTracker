@@ -10,5 +10,6 @@ namespace ProductPriceTracker.Core.Interface.IRepositories
     {
         void Update(CrawlerTask crawlerTask);
         Task<CrawlerTask> GetCrawlerTaskByIdAsync(int id);
+        Task<List<CrawlerTask>> GetAllByUserIdAsync(int userId);
     }
 }

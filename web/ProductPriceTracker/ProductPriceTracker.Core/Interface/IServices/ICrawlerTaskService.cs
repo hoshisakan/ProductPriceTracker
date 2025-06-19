@@ -8,7 +8,7 @@ namespace ProductPriceTracker.Core.Interface.IServices
 {
     public interface ICrawlerTaskService
     {
-        Task<List<CrawlerTask>> GetAllCrawlerTasksAsync();
+        Task<List<CrawlerTask>> GetAllCrawlerTasksAsync(int userId);
         Task<CrawlerTask> GetCrawlerTaskByIdAsync(int id);
         Task AddCrawlerTaskAsync(CrawlerTask crawlerTask);
         Task<bool> UpdateCrawlerTaskAsync(int id, CrawlerTask crawlerTask);

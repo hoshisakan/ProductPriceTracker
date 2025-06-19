@@ -35,9 +35,9 @@ namespace ProductPriceTracker.Infrastructure.Services
             throw new KeyNotFoundException("Crawler task not found");
         }
 
-        public Task<List<CrawlerTask>> GetAllCrawlerTasksAsync()
+        public Task<List<CrawlerTask>> GetAllCrawlerTasksAsync(int userId)
         {
-            return _unitOfWork.CrawlerTasks.GetAllAsync();
+            return _unitOfWork.CrawlerTasks.GetAllByUserIdAsync(userId);
         }
 
         public Task<CrawlerTask> GetCrawlerTaskByIdAsync(int id)

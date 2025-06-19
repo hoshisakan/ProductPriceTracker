@@ -30,7 +30,8 @@ public class CrawlerTaskController : ControllerBase
     {
         try
         {
-            var crawlerTasks = await _crawlerTaskService.GetAllCrawlerTasksAsync();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var crawlerTasks = await _crawlerTaskService.GetAllCrawlerTasksAsync(userId);
 
             if (crawlerTasks == null || !crawlerTasks.Any())
             {
