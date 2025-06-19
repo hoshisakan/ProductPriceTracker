@@ -19,7 +19,44 @@ export const login = (username, password) => {
 export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
-};
+}
+
+export const refreshToken = () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+        return Promise.reject(new Error('No refresh token available'));
+    }
+    return axios.post(`${API_BASE}/auth/refresh`, { refreshToken }).then((res) => {
+        if (res.data.accessToken) {
+            localStorage.setItem('token', res.data.accessToken);
+        }
+        return res.data;
+    });
+}
+
+export async function createCrawlRequest({ mode, keyword, maxPage, token }) {
+    return await axios.post(
+        `${API_BASE}/crawlrequests`,
+        { mode, keyword, maxPage: Number(maxPage) },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+}
+
+export async function getProductHistory(taskId, token) {
+    return await axios.post(
+        `${API_BASE}/producthistory/get-history`,
+        { taskId },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+}
+
+export async function getCrawlerTask({ token }) {
+    return await axios.post(
+        `${API_BASE}/crawlertask/get-crawler-task`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+}
 
 export const getToken = () => localStorage.getItem('token');
 

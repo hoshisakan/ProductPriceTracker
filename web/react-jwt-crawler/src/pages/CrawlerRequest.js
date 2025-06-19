@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getToken, logout, isAuthenticated } from '../services/auth';
+import { getToken, logout, isAuthenticated, createCrawlRequest } from '../services/auth';
 import axios from 'axios';
 
 export default function CrawlerRequest() {
@@ -20,11 +20,7 @@ export default function CrawlerRequest() {
         e.preventDefault();
         const token = getToken();
         try {
-            await axios.post(
-                'http://localhost/api/crawlrequests',
-                { mode, keyword, maxPage: Number(maxPage) },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await createCrawlRequest({ mode, keyword, maxPage, token });
             setMessage('✅ 任務已成功送出！');
         } catch (error) {
             setMessage('❌ 任務送出失敗，請稍後再試');

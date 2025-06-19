@@ -1,8 +1,7 @@
 // src/pages/CrawlerTaskList.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { getToken } from '../services/auth';
+import { getToken, getCrawlerTask } from '../services/auth';
 
 export default function CrawlerTaskList() {
     const [tasks, setTasks] = useState([]);
@@ -11,11 +10,7 @@ export default function CrawlerTaskList() {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await axios.post(
-                    'http://localhost/api/crawlertask/get-crawler-task',
-                    {},
-                    { headers: { Authorization: `Bearer ${getToken()}` } }
-                );
+                const response = await getCrawlerTask({ token: getToken() });
                 setTasks(response.data.$values || []);
             } catch (err) {
                 setError('❌ 無法取得任務列表，請稍後再試。');

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getToken, logout, isAuthenticated } from '../services/auth';
+import { getToken, logout, isAuthenticated, getProductHistory } from '../services/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
@@ -34,11 +34,7 @@ export default function ProductHistory() {
         setMessage('');
         const token = getToken();
         try {
-            const res = await axios.post(
-                'http://localhost/api/producthistory/get-history',
-                { taskId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await getProductHistory(taskId, token);
             const values = res.data && res.data.$values ? res.data.$values : [];
             setHistory(values);
             if (values.length === 0) {
