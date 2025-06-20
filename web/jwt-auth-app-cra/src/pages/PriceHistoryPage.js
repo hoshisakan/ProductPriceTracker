@@ -86,6 +86,7 @@ const PriceHistoryPage = () => {
                     <Table bordered hover responsive>
                         <thead>
                             <tr>
+                                <th>名稱</th>
                                 <th>價格</th>
                                 <th>庫存</th>
                                 <th>時間</th>
@@ -94,8 +95,9 @@ const PriceHistoryPage = () => {
                         <tbody>
                             {history.map((item, idx) => (
                                 <tr key={idx}>
-                                    <td>${item.price}</td>
-                                    <td>{item.stock}</td>
+                                    <td>{item.product.productName}</td>
+                                    <td>{item.price} 元</td>
+                                    <td>{item.stock || '未知'}</td>
                                     <td>{new Date(item.timestamp || item.capturedAt).toLocaleString()}</td>
                                 </tr>
                             ))}

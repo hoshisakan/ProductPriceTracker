@@ -25,7 +25,7 @@ namespace ProductPriceTracker.Infrastructure.Data.Repositories
         public async Task<List<ProductHistory>> GetProductHistoriesByTaskIdAsync(string taskId)
         {
             return await _context.ProductHistories
-                .Where(ph => ph.TaskId == taskId)
+                .Where(ph => ph.TaskId == taskId).Include(ph => ph.Product)
                 .ToListAsync();
         }
 
