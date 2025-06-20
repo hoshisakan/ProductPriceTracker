@@ -6,12 +6,12 @@ import HomePage from './pages/HomePage';
 import PrivateRoute from './routes/PrivateRoute';
 import CrawlTasksPage from './pages/CrawlTasksPage';
 import PriceHistoryPage from './pages/PriceHistoryPage';
-import Navbar from './components/Navbar';
+import CustomNavbar from './components/CustomNavbar';
 
 function App() {
     return (
         <BrowserRouter>
-            <Navbar />
+            <CustomNavbar />
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />

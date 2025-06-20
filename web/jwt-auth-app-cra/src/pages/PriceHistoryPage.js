@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import api from '../utils/api';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
+import { Container, Form, InputGroup, Button, Table, Alert, Spinner } from 'react-bootstrap';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -56,33 +57,33 @@ const PriceHistoryPage = () => {
     };
 
     return (
-        <div className="container mt-4">
+        <Container className="mt-4">
             <h2>📈 商品價格歷史圖表</h2>
 
-            <form onSubmit={fetchHistory} className="mb-3">
-                <div className="input-group">
-                    <input
+            <Form onSubmit={fetchHistory} className="mb-4">
+                <InputGroup>
+                    <Form.Control
                         type="text"
-                        className="form-control"
                         placeholder="輸入 taskId（例如 Task-20250618-xxxx）"
                         value={taskId}
                         onChange={(e) => setTaskId(e.target.value)}
                         required
                     />
-                    <button type="submit" className="btn btn-primary">
+                    <Button type="submit" variant="primary">
                         查詢
-                    </button>
-                </div>
-            </form>
+                    </Button>
+                </InputGroup>
+            </Form>
 
-            {loading && <p>載入中...</p>}
-            {error && <div className="alert alert-danger">{error}</div>}
+            {loading && <Spinner animation="border" variant="primary" className="mb-3" />}
+
+            {error && <Alert variant="danger">{error}</Alert>}
 
             {history.length > 0 && (
                 <>
                     <Line data={chartData} options={chartOptions} className="mb-4" />
 
-                    <table className="table table-bordered">
+                    <Table bordered hover responsive>
                         <thead>
                             <tr>
                                 <th>價格</th>
@@ -99,10 +100,10 @@ const PriceHistoryPage = () => {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </Table>
                 </>
             )}
-        </div>
+        </Container>
     );
 };
 

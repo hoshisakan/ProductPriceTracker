@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../utils/api';
+import { Form, Button, Alert } from 'react-bootstrap';
 
 const CrawlRequestForm = () => {
     const [mode, setMode] = useState('momo');
@@ -12,7 +13,7 @@ const CrawlRequestForm = () => {
         setMessage('');
 
         if (!keyword) {
-            setMessage('請輸入關鍵字');
+            setMessage('❗ 請輸入關鍵字');
             return;
         }
 
@@ -23,51 +24,53 @@ const CrawlRequestForm = () => {
                 maxPage: Number(maxPage),
             });
             console.log('任務建立成功:', response.data);
-            setMessage('任務建立成功！');
+            setMessage('✅ 任務建立成功！');
         } catch (error) {
-            setMessage('任務建立失敗：' + (error.response?.data?.message || error.message));
+            setMessage('❌ 任務建立失敗：' + (error.response?.data?.message || error.message));
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mb-4">
-            <div className="mb-3">
-                <label>模式 (mode)</label>
-                <select className="form-select" value={mode} onChange={(e) => setMode(e.target.value)}>
+        <Form onSubmit={handleSubmit} className="mb-4">
+            <Form.Group className="mb-3">
+                <Form.Label>模式 (mode)</Form.Label>
+                <Form.Select value={mode} onChange={(e) => setMode(e.target.value)}>
                     <option value="momo">momo</option>
                     <option value="pchome">pchome</option>
-                </select>
-            </div>
+                </Form.Select>
+            </Form.Group>
 
-            <div className="mb-3">
-                <label>關鍵字 (keyword)</label>
-                <input
+            <Form.Group className="mb-3">
+                <Form.Label>關鍵字 (keyword)</Form.Label>
+                <Form.Control
                     type="text"
-                    className="form-control"
+                    placeholder="輸入商品關鍵字"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    placeholder="輸入商品關鍵字"
                 />
-            </div>
+            </Form.Group>
 
-            <div className="mb-3">
-                <label>最大頁數 (maxPage)</label>
-                <input
+            <Form.Group className="mb-3">
+                <Form.Label>最大頁數 (maxPage)</Form.Label>
+                <Form.Control
                     type="number"
-                    className="form-control"
-                    value={maxPage}
-                    onChange={(e) => setMaxPage(e.target.value)}
                     min={1}
                     max={20}
+                    value={maxPage}
+                    onChange={(e) => setMaxPage(e.target.value)}
                 />
-            </div>
+            </Form.Group>
 
-            <button type="submit" className="btn btn-primary">
+            <Button type="submit" variant="primary">
                 送出爬蟲任務
-            </button>
+            </Button>
 
-            {message && <div className="mt-3 alert alert-info">{message}</div>}
-        </form>
+            {message && (
+                <Alert variant="info" className="mt-3">
+                    {message}
+                </Alert>
+            )}
+        </Form>
     );
 };
 
