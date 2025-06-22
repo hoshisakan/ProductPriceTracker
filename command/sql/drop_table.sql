@@ -1,3 +1,5 @@
+DROP TABLE dbo.RefreshTokens;
 DROP TABLE dbo.ProductHistories;
 DROP TABLE dbo.Products;
 DROP TABLE dbo.CrawlerTasks;;
+DROP TABLE dbo.Users;

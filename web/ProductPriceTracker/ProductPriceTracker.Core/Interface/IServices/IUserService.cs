@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProductPriceTracker.Core.Dtos;
 using ProductPriceTracker.Core.Entities;
 
 
@@ -20,5 +21,6 @@ namespace ProductPriceTracker.Core.Interface.IServices
         Task<TokenResponseDto?> RefreshAsync(TokenRequestDto tokenDto);
         bool CheckTokenValidity(string token);
         Task<bool> UserExistsAsync(string username);
+        Task<TokenResponseDto?> GoogleLoginAsync(GoogleLoginDto dto);
     }
 }

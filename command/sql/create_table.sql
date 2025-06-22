@@ -1,10 +1,16 @@
 
 CREATE TABLE dbo.Users (
-    Id INT IDENTITY(1,1) PRIMARY KEY,          -- 主鍵，自動遞增
-    Username NVARCHAR(100) NOT NULL UNIQUE,    -- 使用者名稱，不可重複
-    PasswordHash NVARCHAR(256) NOT NULL,       -- 密碼雜湊值
-    Role NVARCHAR(20) NOT NULL DEFAULT 'User', -- 使用者角色，預設為 User
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+    Id INT IDENTITY(1,1) PRIMARY KEY,                  -- 主鍵，自動遞增
+    Username NVARCHAR(100) NOT NULL UNIQUE,            -- 使用者名稱，不可重複
+    PasswordHash NVARCHAR(256) NOT NULL,               -- 密碼雜湊值
+    Role NVARCHAR(20) NOT NULL DEFAULT 'User',         -- 使用者角色，預設為 User
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(), -- 建立時間
+
+    -- Google OAuth 欄位（可為 NULL）
+    GoogleId NVARCHAR(50) NULL,        -- Google 帳號的 sub ID
+    Email NVARCHAR(255) NULL,          -- Email 可用於登入比對
+    AvatarUrl NVARCHAR(500) NULL,      -- 頭像連結
+    Name NVARCHAR(100) NULL            -- 顯示名稱
 );
 
 CREATE TABLE dbo.RefreshTokens (

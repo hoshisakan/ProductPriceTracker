@@ -15,6 +15,14 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
+    public string? GoogleId { get; set; }
+
+    public string? Email { get; set; }
+
+    public string? AvatarUrl { get; set; }
+
+    public string? Name { get; set; }
+
     public virtual ICollection<CrawlerTask> CrawlerTasks { get; set; } = new List<CrawlerTask>();
 
     public virtual ICollection<ProductHistory> ProductHistories { get; set; } = new List<ProductHistory>();

@@ -17,6 +17,8 @@ public partial class CrawlerTask
 
     public int UserId { get; set; }
 
+    public virtual ICollection<ProductHistory> ProductHistories { get; set; } = new List<ProductHistory>();
+
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
     public virtual User User { get; set; } = null!;

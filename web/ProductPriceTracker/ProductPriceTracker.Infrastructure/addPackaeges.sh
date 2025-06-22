@@ -10,3 +10,4 @@ dotnet add package Selenium.Support
 dotnet add package BCrypt.Net-Next
 dotnet add package System.Data.SqlClient
 dotnet add package Quartz.Extensions.Hosting
+dotnet add package Google.Apis.Auth

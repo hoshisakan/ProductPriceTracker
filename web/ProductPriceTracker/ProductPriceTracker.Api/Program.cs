@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using ProductPriceTracker.Infrastructure.Services.Jobs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 
 var configuration = new ConfigurationBuilder()
@@ -120,6 +122,8 @@ builder.Services.AddScoped<ICrawlerTaskService, CrawlerTaskService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<GoogleAuthService>();
 
 
 // Swagger
@@ -155,6 +159,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     options.JsonSerializerOptions.WriteIndented = true;
 });
+
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -218,8 +223,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Remove("Cross-Origin-Opener-Policy");
+    context.Response.Headers.Remove("Cross-Origin-Embedder-Policy");
+    await next();
+});
+
 // app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

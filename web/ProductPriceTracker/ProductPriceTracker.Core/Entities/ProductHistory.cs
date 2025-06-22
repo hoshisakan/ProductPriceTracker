@@ -21,5 +21,7 @@ public partial class ProductHistory
 
     public virtual Product Product { get; set; } = null!;
 
+    public virtual CrawlerTask Task { get; set; } = null!;
+
     public virtual User User { get; set; } = null!;
 }

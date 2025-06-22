@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ProductPriceTracker.Core.Dtos;
+using ProductPriceTracker.Core.Entities;
 using ProductPriceTracker.Core.Interface.IServices;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -47,6 +48,39 @@ public class AuthController : ControllerBase
 
         return Ok(token);
     }
+
+    [HttpPost("google-login")]
+    public async Task<ActionResult<TokenResponseDto>> GoogleLogin([FromBody] GoogleLoginDto googleLoginDto)
+    {
+        if (string.IsNullOrWhiteSpace(googleLoginDto.GoogleToken))
+        {
+            _logger.LogWarning("Google token is missing.");
+            return BadRequest("Google token is required.");
+        }
+
+        try
+        {
+            _logger.LogInformation("Attempting Google login with token: {GoogleToken}", googleLoginDto.GoogleToken);
+
+            // 驗證並產生 Token
+            var token = await _userService.GoogleLoginAsync(googleLoginDto);
+
+            if (token == null)
+            {
+                _logger.LogWarning("Google token validation failed.");
+                return Unauthorized("Invalid Google token");
+            }
+
+            _logger.LogInformation("Google login successful for user: {Username}", token.Username);
+            return Ok(token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during Google login.");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
 
     [HttpPost("refresh")]
     public async Task<ActionResult<TokenResponseDto>> Refresh([FromBody] TokenRequestDto tokenDto)
