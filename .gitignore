@@ -64,3 +64,5 @@ data
 .vscode
 command/docker/Untitled-2.dockerfile
 google_oauth_key.txt
+.env
+appsettings.json
