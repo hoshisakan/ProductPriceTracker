@@ -4,18 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
+using ProductPriceTracker.Core.Interface.IServices;
 
 namespace ProductPriceTracker.Infrastructure.Services
 {
-public class GoogleAuthService
+public class GoogleAuthService : IGoogleAuthService
 {
-    private readonly HttpClient _httpClient;
     private readonly IConfiguration _config;
 
-    public GoogleAuthService(HttpClient httpClient, IConfiguration config)
+    public GoogleAuthService(IConfiguration config)
     {
         _config = config;
-        _httpClient = httpClient;
     }
 
     public async Task<GoogleJsonWebSignature.Payload?> VerifyTokenAsync(string googleToken)

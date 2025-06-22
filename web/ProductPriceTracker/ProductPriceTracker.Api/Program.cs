@@ -123,7 +123,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<GoogleAuthService>();
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 
 // Swagger

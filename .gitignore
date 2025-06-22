@@ -66,3 +66,4 @@ command/docker/Untitled-2.dockerfile
 google_oauth_key.txt
 .env
 appsettings.json
+web/ProductPriceTracker/ProductPriceTracker.Api/appsettings.json

@@ -20,11 +20,11 @@ namespace ProductPriceTracker.Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
         private readonly ILogger<UserService> _logger;
-        private readonly GoogleAuthService _googleAuthService;
+        private readonly IGoogleAuthService _googleAuthService;
         private readonly IConfiguration _config;
 
 
-        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService, ILogger<UserService> logger, GoogleAuthService googleAuthService, IConfiguration config)
+        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService, ILogger<UserService> logger, IGoogleAuthService googleAuthService, IConfiguration config)
         {
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
